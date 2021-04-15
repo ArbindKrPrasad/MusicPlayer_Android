@@ -1,5 +1,6 @@
 package com.arbind.musicplayer;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
     TabLayout tabLayout;
     ViewPager viewPager;
+    public boolean isJsonMade = false;
     String permission[] = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
     public String myPath;
 
@@ -30,7 +32,26 @@ public class MainActivity extends AppCompatActivity {
         if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED||
                 ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED){
             ActivityCompat.requestPermissions(MainActivity.this, permission, 34);
+        } else{
+            execute();
         }
+
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 34){
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED&&grantResults[1] == PackageManager.PERMISSION_GRANTED){
+                execute();
+            }
+            else{
+                finishAndRemoveTask();
+            }
+        }
+    }
+
+    public void execute(){
         tabLayout= findViewById(R.id.tabLayout);
         viewPager = findViewById(R.id.viewPager);
         tabLayout.setBackgroundColor(Color.rgb(0, 0, 0));
@@ -61,13 +82,5 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-    }
-
-    public void store(String val){
-        myPath = val;
-        //System.out.println(val);
-    }
-    public String retrive(){
-        return myPath;
     }
 }

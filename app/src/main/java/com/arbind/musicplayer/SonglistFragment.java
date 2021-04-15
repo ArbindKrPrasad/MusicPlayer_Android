@@ -134,6 +134,8 @@ public class SonglistFragment extends Fragment {
                 String name = c.getString(1);
                 String album = c.getString(2);
                 String artist = c.getString(3);
+                //String art = c.getString(4);
+                //System.out.println("egvgvcdgvcdvcd    "+ art);
                 try{
                     jsonObject.put("jpath", path);
                     jsonObject.put("jname", name);
@@ -155,6 +157,7 @@ public class SonglistFragment extends Fragment {
         SharedPreferences.Editor editor2 = jsp.edit();
         editor2.putString(jArray, jsonArray.toString());
         editor2.commit();
+        ((MainActivity) getActivity()).isJsonMade = true;
         return tempAudioList;
 
     }

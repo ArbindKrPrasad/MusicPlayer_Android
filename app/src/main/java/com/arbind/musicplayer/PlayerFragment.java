@@ -40,8 +40,8 @@ public class PlayerFragment extends Fragment {
     MediaPlayer mediaPlayer;
     boolean isPlaying = false;
     String name, uri, artistName;
-    String permission[] = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
     boolean isFirstVisit = true;
+
     boolean isPause = false;
     boolean isInitialPlay = true;
     String path;
@@ -68,15 +68,33 @@ public class PlayerFragment extends Fragment {
     JSONObject jsonObject;
     boolean isNextPrev = false;
 
-    @RequiresApi(api = Build.VERSION_CODES.P)
+    //@RequiresApi(api = Build.VERSION_CODES.P)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView  = inflater.inflate(R.layout.fragment_player, container, false);
 
+
+
         jsp = this.getActivity().getSharedPreferences(jsonPreference, Context.MODE_PRIVATE);
         songsJSON = jsp.getString("jArray", "");
-        System.out.println(songsJSON);
+        System.out.println("Song Array"+songsJSON);
+
+        if(((MainActivity) getActivity()).isJsonMade == false && isFirstVisit){
+            try{
+
+                //songsJSON = jsp.getString("jArray", "");
+                jsonArray = new JSONArray(songsJSON);
+                jsonObject = jsonArray.getJSONObject(songIndex);
+                songPath = jsonObject.getString("jpath");
+                songName = jsonObject.getString("jname");
+                songArtist = jsonObject.getString("jartist");
+                songAlbum = jsonObject.getString("jalbum");
+            } catch(Exception e){
+                System.out.println("abcd"+e);
+            }
+
+        }
 
         sharedpreferences = this.getActivity().getSharedPreferences(MyPreference, Context.MODE_PRIVATE);
         play = rootView.findViewById(R.id.imageButton);
@@ -127,7 +145,7 @@ public class PlayerFragment extends Fragment {
                     int noOfSongs = jsonArray.length();
                     songIndex = songIndex-1;
                     if(songIndex<0){
-                        songIndex = noOfSongs;
+                        songIndex = noOfSongs-1;
                     }
                     jsonObject = jsonArray.getJSONObject(songIndex);
                     songPath = jsonObject.getString("jpath");
@@ -207,49 +225,38 @@ public class PlayerFragment extends Fragment {
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
+        //updateSongDetails();
         if (isVisibleToUser) {
             if (isFirstVisit){
                 isFirstVisit=false;
             }
             else {
-//                SharedPreferences.Editor editor = sharedpreferences.edit();
-//                songPath = sharedpreferences.getString("songPath", "");
-//                songName = sharedpreferences.getString("songName", "");
-//                songArtist = sharedpreferences.getString("songArtist", "");
-//                songAlbum = sharedpreferences.getString("songAlbum", "");
-
-
-//                songPath = sharedpreferences.getString("songPath", "");
-//                songName = sharedpreferences.getString("songName", "");
-//                songArtist = sharedpreferences.getString("songArtist", "");
-//                songAlbum = sharedpreferences.getString("songAlbum", "");
-
-                songIndex = jsp.getInt("songIndex", -1);
-                System.out.println("cghdvhvdch   "+ songIndex);
-
-                try {
-                    jsonArray = new JSONArray(songsJSON);
-                    jsonObject = jsonArray.getJSONObject(songIndex);
-                    songPath = jsonObject.getString("jpath");
-                    songName = jsonObject.getString("jname");
-                    songArtist = jsonObject.getString("jartist");
-                    songAlbum = jsonObject.getString("jalbum");
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-
-
-
-                System.out.println(songPath);
-                if(!songPath.equals(oldPath)){
-                    isSongUpdated = true;
-                    playSong();
-                }
-
+                visibleToUser();
             }
         }
         else {
+        }
+    }
+
+    public void visibleToUser(){
+        songIndex = jsp.getInt("songIndex", -1);
+        System.out.println("cghdvhvdch   "+ songIndex);
+
+        try {
+            songsJSON = jsp.getString("jArray", "");
+            jsonArray = new JSONArray(songsJSON);
+            jsonObject = jsonArray.getJSONObject(songIndex);
+            songPath = jsonObject.getString("jpath");
+            songName = jsonObject.getString("jname");
+            songArtist = jsonObject.getString("jartist");
+            songAlbum = jsonObject.getString("jalbum");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        System.out.println(songPath);
+        if(!songPath.equals(oldPath)){
+            isSongUpdated = true;
+            playSong();
         }
     }
 
