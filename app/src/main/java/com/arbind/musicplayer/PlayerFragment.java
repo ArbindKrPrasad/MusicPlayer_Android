@@ -26,6 +26,10 @@ import android.widget.Toast;
 
 import com.google.android.material.tabs.TabLayout;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -48,7 +52,8 @@ public class PlayerFragment extends Fragment {
     String oldPath;
     int startDuration, endDuration;
     public static final String MyPreference = "MyPrif";
-    SharedPreferences sharedpreferences;
+    public static final String jsonPreference = "JPref";
+    SharedPreferences sharedpreferences, jsp;
     boolean isSongUpdated = false;
     int finalTime, startTime, endTime;
     int oneTimeOnly = 0;
@@ -57,12 +62,21 @@ public class PlayerFragment extends Fragment {
 
     private int forwardTime = 5000;
     private int backwardTime = 5000;
+    String songsJSON;
+    int songIndex = -1;
+    JSONArray jsonArray;
+    JSONObject jsonObject;
+    boolean isNextPrev = false;
 
     @RequiresApi(api = Build.VERSION_CODES.P)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView  = inflater.inflate(R.layout.fragment_player, container, false);
+
+        jsp = this.getActivity().getSharedPreferences(jsonPreference, Context.MODE_PRIVATE);
+        songsJSON = jsp.getString("jArray", "");
+        System.out.println(songsJSON);
 
         sharedpreferences = this.getActivity().getSharedPreferences(MyPreference, Context.MODE_PRIVATE);
         play = rootView.findViewById(R.id.imageButton);
@@ -101,15 +115,30 @@ public class PlayerFragment extends Fragment {
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TabLayout tabhost = (TabLayout) getActivity().findViewById(R.id.tabLayout);
-                tabhost.getTabAt(1).select();
+                nextSong();
+
+
             }
         });
         prev.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                TabLayout tabhost = (TabLayout) getActivity().findViewById(R.id.tabLayout);
-                tabhost.getTabAt(1).select();
+                try{
+                    int noOfSongs = jsonArray.length();
+                    songIndex = songIndex-1;
+                    if(songIndex<0){
+                        songIndex = noOfSongs;
+                    }
+                    jsonObject = jsonArray.getJSONObject(songIndex);
+                    songPath = jsonObject.getString("jpath");
+                    songName = jsonObject.getString("jname");
+                    songArtist = jsonObject.getString("jartist");
+                    songAlbum = jsonObject.getString("jalbum");
+                    isNextPrev = true;
+                    playSong();
+                } catch (Exception e){
+                    System.out.println(e);
+                }
             }
         });
 
@@ -183,11 +212,32 @@ public class PlayerFragment extends Fragment {
                 isFirstVisit=false;
             }
             else {
-                //SharedPreferences.Editor editor = sharedpreferences.edit();
-                songPath = sharedpreferences.getString("songPath", "");
-                songName = sharedpreferences.getString("songName", "");
-                songArtist = sharedpreferences.getString("songArtist", "");
-                songAlbum = sharedpreferences.getString("songAlbum", "");
+//                SharedPreferences.Editor editor = sharedpreferences.edit();
+//                songPath = sharedpreferences.getString("songPath", "");
+//                songName = sharedpreferences.getString("songName", "");
+//                songArtist = sharedpreferences.getString("songArtist", "");
+//                songAlbum = sharedpreferences.getString("songAlbum", "");
+
+
+//                songPath = sharedpreferences.getString("songPath", "");
+//                songName = sharedpreferences.getString("songName", "");
+//                songArtist = sharedpreferences.getString("songArtist", "");
+//                songAlbum = sharedpreferences.getString("songAlbum", "");
+
+                songIndex = jsp.getInt("songIndex", -1);
+                System.out.println("cghdvhvdch   "+ songIndex);
+
+                try {
+                    jsonArray = new JSONArray(songsJSON);
+                    jsonObject = jsonArray.getJSONObject(songIndex);
+                    songPath = jsonObject.getString("jpath");
+                    songName = jsonObject.getString("jname");
+                    songArtist = jsonObject.getString("jartist");
+                    songAlbum = jsonObject.getString("jalbum");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
 
 
 
@@ -210,7 +260,7 @@ public class PlayerFragment extends Fragment {
             tabhost.getTabAt(1).select();
         }
         else{
-            if(isSongUpdated){
+            if(isSongUpdated||isNextPrev){
                 mediaPlayer.reset();
                 //mediaPlayer.stop();
                 try {
@@ -223,16 +273,17 @@ public class PlayerFragment extends Fragment {
                     e.printStackTrace();
                 }
                 isSongUpdated = false;
+                isNextPrev = false;
                 mediaPlayer.start();
                 play.setImageResource(R.drawable.pausew);
                 //endDuration = mediaPlayer.getDuration();
                 finalTime = mediaPlayer.getDuration();
                 startTime = mediaPlayer.getCurrentPosition();
 
-                if (oneTimeOnly == 0) {
+                //if (oneTimeOnly == 0) {
                     seekBar.setMax((int) finalTime);
-                    oneTimeOnly = 1;
-                }
+                    //oneTimeOnly = 1;
+                //}
 
                 endTimeTV.setText(String.format("%d : %02d",
                         TimeUnit.MILLISECONDS.toMinutes((long) finalTime),
@@ -286,8 +337,32 @@ public class PlayerFragment extends Fragment {
             );
             seekBar.setProgress((int)startTime);
             myHandler.postDelayed(this, 100);
+            //System.out.println(startTime+" "+finalTime);
+            if(startTime>=finalTime-100){
+                nextSong();
+            }
+
         }
     };
+
+    public void nextSong(){
+        try{
+            int noOfSongs = jsonArray.length();
+            songIndex = songIndex+1;
+            if(songIndex>noOfSongs-1){
+                songIndex = 0;
+            }
+            jsonObject = jsonArray.getJSONObject(songIndex);
+            songPath = jsonObject.getString("jpath");
+            songName = jsonObject.getString("jname");
+            songArtist = jsonObject.getString("jartist");
+            songAlbum = jsonObject.getString("jalbum");
+            isNextPrev = true;
+            playSong();
+        } catch (Exception e){
+            System.out.println(e);
+        }
+    }
 
 //    @Override
 //    public void onResume() {

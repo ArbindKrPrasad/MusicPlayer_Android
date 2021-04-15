@@ -26,6 +26,9 @@ import android.widget.ListView;
 
 import com.google.android.material.tabs.TabLayout;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,13 +39,17 @@ public class SonglistFragment extends Fragment {
     CustomListAdapter customListAdapter;
     ListView lv;
 
+
     public static final String MyPreference = "MyPrif";
+    public static final String jsonPreference = "JPref";
     public static final String songPath = "songPath";
     public static final String songName = "songName";
     public static final String songArtist = "songArtist";
     public static final String songAlbum = "songAlbum";
+    public static final String songIndex = "songIndex";
+    public static final String jArray = "jArray";
 
-    SharedPreferences sp;
+    SharedPreferences sp, jsp;
 
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
@@ -52,7 +59,10 @@ public class SonglistFragment extends Fragment {
         songList = getAudio(getContext());
         setToView();
 
-        sp = this.getActivity().getSharedPreferences(MyPreference, Context.MODE_PRIVATE);
+        //sp = this.getActivity().getSharedPreferences(MyPreference, Context.MODE_PRIVATE);
+        jsp = this.getActivity().getSharedPreferences(jsonPreference, Context.MODE_PRIVATE);
+
+
 
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -79,12 +89,12 @@ public class SonglistFragment extends Fragment {
                 //ft.setTransition();
                // ft.commit();
 
-                SharedPreferences.Editor editor = sp.edit();
-                editor.putString(songPath, songList.get(position).getPath());
-                editor.putString(songName,songList.get(position).getName() );
-                editor.putString(songArtist, songList.get(position).getArtist());
-                editor.putString(songAlbum, songList.get(position).getAlbum());
-
+                SharedPreferences.Editor editor = jsp.edit();
+//                editor.putString(songPath, songList.get(position).getPath());
+//                editor.putString(songName,songList.get(position).getName() );
+//                editor.putString(songArtist, songList.get(position).getArtist());
+//                editor.putString(songAlbum, songList.get(position).getAlbum());
+                editor.putInt(songIndex,position);
                 editor.commit();
 
                 //((MainActivity) getActivity()).store(songList.get(position).getPath());
@@ -114,18 +124,37 @@ public class SonglistFragment extends Fragment {
         String selection = MediaStore.Audio.Media.IS_MUSIC + " != 0";
         Cursor c = context.getContentResolver().query(uri, projection, selection, null, null);
 
+
+        JSONArray jsonArray = new JSONArray();
+
         if(c!=null){
             while(c.moveToNext()){
+                JSONObject jsonObject = new JSONObject();
                 String path = c.getString(0);
                 String name = c.getString(1);
                 String album = c.getString(2);
                 String artist = c.getString(3);
+                try{
+                    jsonObject.put("jpath", path);
+                    jsonObject.put("jname", name);
+                    jsonObject.put("jalbum", album);
+                    jsonObject.put("jartist", artist);
+                    jsonArray.put(jsonObject);
+                } catch (Exception e){
+
+                }
+
                 SongObject song = new SongObject(path, name, album, artist);
                 System.out.println(path+" "+name+" "+album+" "+ artist);
                 tempAudioList.add(song);
             }
             c.close();
         }
+
+        jsp = this.getActivity().getSharedPreferences(jsonPreference, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor2 = jsp.edit();
+        editor2.putString(jArray, jsonArray.toString());
+        editor2.commit();
         return tempAudioList;
 
     }
