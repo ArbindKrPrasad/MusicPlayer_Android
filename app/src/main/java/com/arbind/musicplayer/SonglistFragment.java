@@ -147,7 +147,7 @@ public class SonglistFragment extends Fragment {
                 }
 
                 SongObject song = new SongObject(path, name, album, artist);
-                System.out.println(path+" "+name+" "+album+" "+ artist);
+                //System.out.println(path+" "+name+" "+album+" "+ artist);
                 tempAudioList.add(song);
             }
             c.close();

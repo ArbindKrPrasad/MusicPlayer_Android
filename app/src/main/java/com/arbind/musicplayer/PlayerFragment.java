@@ -373,10 +373,11 @@ public class PlayerFragment extends Fragment {
             myHandler.postDelayed(this, 100);
             //System.out.println(startTime+" "+finalTime);
             if(startTime>=finalTime-100){
+                System.out.println("nextSong");
                 nextSong();
             }
 
-            System.out.println(startTime+" "+finalTime);
+            //System.out.println(startTime+" "+finalTime);
 
         }
     };
