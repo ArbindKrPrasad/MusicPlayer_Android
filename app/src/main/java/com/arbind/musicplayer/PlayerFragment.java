@@ -37,11 +37,11 @@ import java.util.concurrent.TimeUnit;
 public class PlayerFragment extends Fragment {
     ImageButton play, prev, next, ff, fb;
     TextView title, artist, album, startTimeTV, endTimeTV;
-    MediaPlayer mediaPlayer;
+    //MediaPlayer mediaPlayer;
     boolean isPlaying = false;
     String name, uri, artistName;
     boolean isFirstVisit = true;
-
+    boolean isInitialPlayClick = true;
     boolean isPause = false;
     boolean isInitialPlay = true;
     String path;
@@ -68,6 +68,12 @@ public class PlayerFragment extends Fragment {
     JSONObject jsonObject;
     boolean isNextPrev = false;
 
+    MediaPlayer mediaPlayer = new MediaPlayer();
+    public static final String uName = "userName";
+    public static final String uMobile = "userMobile";
+    public static final String uemail = "userEmail";
+    TextView userName, userMobile, userEmail;
+
     //@RequiresApi(api = Build.VERSION_CODES.P)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -79,6 +85,19 @@ public class PlayerFragment extends Fragment {
         jsp = this.getActivity().getSharedPreferences(jsonPreference, Context.MODE_PRIVATE);
         songsJSON = jsp.getString("jArray", "");
         System.out.println("Song Array"+songsJSON);
+
+
+
+//        View header = getLayoutInflater().inflate(R.layout.header_layout, null, false);
+//
+//        userName = header.findViewById(R.id.tv4);
+//        userEmail = header.findViewById(R.id.tv3);
+//
+//
+//        String name = jsp.getString(uName, "UserName");
+//        String email = jsp.getString(uemail, "email");
+//        userName.setText("Hi"+name);
+//        userEmail.setText(jsp.getString(uemail, "email id"));
 
         if(((MainActivity) getActivity()).isJsonMade == false && isFirstVisit){
             try{
@@ -114,7 +133,6 @@ public class PlayerFragment extends Fragment {
 ////width and height of your Image ,if it is inside Relative change the LinearLayout to RelativeLayout.
 //        play.setLayoutParams(layoutParams);
 
-        title.setSelected(true);
 
         try{
 //            uri = this.getArguments().getString("path");
@@ -125,10 +143,10 @@ public class PlayerFragment extends Fragment {
 
         }
 
-        title.setText(name);
-        artist.setText(artistName);
+        //title.setText(name);
+        //artist.setText(artistName);
 
-        mediaPlayer = new MediaPlayer();
+        
 
         next.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -141,29 +159,20 @@ public class PlayerFragment extends Fragment {
         prev.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try{
-                    int noOfSongs = jsonArray.length();
-                    songIndex = songIndex-1;
-                    if(songIndex<0){
-                        songIndex = noOfSongs-1;
-                    }
-                    jsonObject = jsonArray.getJSONObject(songIndex);
-                    songPath = jsonObject.getString("jpath");
-                    songName = jsonObject.getString("jname");
-                    songArtist = jsonObject.getString("jartist");
-                    songAlbum = jsonObject.getString("jalbum");
-                    isNextPrev = true;
-                    playSong();
-                } catch (Exception e){
-                    System.out.println(e);
-                }
+                prevSong();
             }
         });
 
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                playSong();
+                if(isInitialPlayClick){
+                    visibleToUser();
+                    isInitialPlayClick = false;
+                } else{
+                    playSong();
+                }
+
             }
         });
 
@@ -176,7 +185,7 @@ public class PlayerFragment extends Fragment {
                 if((temp+forwardTime)<=finalTime){
                     startTime = startTime + forwardTime;
                     mediaPlayer.seekTo((int) startTime);
-                    Toast.makeText(getContext(),"You have Jumped forward 5 seconds",Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getContext(),"You have Jumped forward 5 seconds",Toast.LENGTH_SHORT).show();
                 }else{
                     Toast.makeText(getContext(),"Cannot jump forward 5 seconds",Toast.LENGTH_SHORT).show();
                 }
@@ -191,7 +200,7 @@ public class PlayerFragment extends Fragment {
                 if((temp-backwardTime)>0){
                     startTime = startTime - backwardTime;
                     mediaPlayer.seekTo((int) startTime);
-                    Toast.makeText(getContext(),"You have Jumped backward 5 seconds",Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getContext(),"You have Jumped backward 5 seconds",Toast.LENGTH_SHORT).show();
                 }else{
                     Toast.makeText(getContext(),"Cannot jump backward 5 seconds",Toast.LENGTH_SHORT).show();
                 }
@@ -225,12 +234,22 @@ public class PlayerFragment extends Fragment {
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        //updateSongDetails();
+
         if (isVisibleToUser) {
             if (isFirstVisit){
+
                 isFirstVisit=false;
             }
             else {
+                endTimeTV.setText(String.format("%d : %02d",
+                        TimeUnit.MILLISECONDS.toMinutes((long) finalTime),
+                        TimeUnit.MILLISECONDS.toSeconds((long) finalTime) -
+                                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long)
+                                        finalTime)))
+                );
+                seekBar.setProgress(startTime);
+                seekBar.setMax((int) finalTime);
+                updateSongDetails();
                 visibleToUser();
             }
         }
@@ -240,7 +259,7 @@ public class PlayerFragment extends Fragment {
 
     public void visibleToUser(){
         songIndex = jsp.getInt("songIndex", -1);
-        System.out.println("cghdvhvdch   "+ songIndex);
+
 
         try {
             songsJSON = jsp.getString("jArray", "");
@@ -261,6 +280,7 @@ public class PlayerFragment extends Fragment {
     }
 
     public void playSong(){
+
         if(songPath==""){
             Toast.makeText(getContext(), "Please select a song", Toast.LENGTH_SHORT).show();
             TabLayout tabhost = (TabLayout) getActivity().findViewById(R.id.tabLayout);
@@ -282,6 +302,7 @@ public class PlayerFragment extends Fragment {
                 isSongUpdated = false;
                 isNextPrev = false;
                 mediaPlayer.start();
+                isPlaying = true;
                 play.setImageResource(R.drawable.pausew);
                 //endDuration = mediaPlayer.getDuration();
                 finalTime = mediaPlayer.getDuration();
@@ -314,9 +335,13 @@ public class PlayerFragment extends Fragment {
             else {
                 if(mediaPlayer.isPlaying()){
                     mediaPlayer.pause();
+                    isPlaying = false;
+                    title.setSelected(false);
                     play.setImageResource(R.drawable.playw);
                 } else {
                     mediaPlayer.start();
+                    isPlaying = true;
+                    title.setSelected(true);
                     play.setImageResource(R.drawable.pausew);
                 }
             }
@@ -324,9 +349,11 @@ public class PlayerFragment extends Fragment {
     }
 
     public void updateSongDetails(){
+
         title.setText(songName);
         artist.setText(songArtist);
         album.setText(songAlbum);
+        title.setSelected(true);
 
 //        long minutes = TimeUnit.MILLISECONDS.toMinutes(endDuration);
 //        long seconds = TimeUnit.MILLISECONDS.toSeconds(endDuration);
@@ -349,6 +376,8 @@ public class PlayerFragment extends Fragment {
                 nextSong();
             }
 
+            System.out.println(startTime+" "+finalTime);
+
         }
     };
 
@@ -359,6 +388,31 @@ public class PlayerFragment extends Fragment {
             if(songIndex>noOfSongs-1){
                 songIndex = 0;
             }
+
+            SharedPreferences.Editor ed = jsp.edit();
+            ed.putInt("songIndex", songIndex);
+            ed.commit();
+            jsonObject = jsonArray.getJSONObject(songIndex);
+            songPath = jsonObject.getString("jpath");
+            songName = jsonObject.getString("jname");
+            songArtist = jsonObject.getString("jartist");
+            songAlbum = jsonObject.getString("jalbum");
+            isNextPrev = true;
+            playSong();
+        } catch (Exception e){
+            System.out.println(e);
+        }
+    }
+    public void prevSong(){
+        try{
+            int noOfSongs = jsonArray.length();
+            songIndex = songIndex-1;
+            if(songIndex<0){
+                songIndex = noOfSongs-1;
+            }
+            SharedPreferences.Editor ed = jsp.edit();
+            ed.putInt("songIndex", songIndex);
+            ed.commit();
             jsonObject = jsonArray.getJSONObject(songIndex);
             songPath = jsonObject.getString("jpath");
             songName = jsonObject.getString("jname");
@@ -386,5 +440,22 @@ public class PlayerFragment extends Fragment {
 //    }
 
 
-
+    @Override
+    public void onResume() {
+        super.onResume();
+        endTimeTV.setText(String.format("%d : %02d",
+                TimeUnit.MILLISECONDS.toMinutes((long) finalTime),
+                TimeUnit.MILLISECONDS.toSeconds((long) finalTime) -
+                        TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes((long)
+                                finalTime)))
+        );
+        seekBar.setProgress(startTime);
+        seekBar.setMax((int) finalTime);
+        updateSongDetails();
+        if(isPlaying){
+            play.setImageResource(R.drawable.pausew);
+        } else{
+            play.setImageResource(R.drawable.pausew);
+        }
+    }
 }

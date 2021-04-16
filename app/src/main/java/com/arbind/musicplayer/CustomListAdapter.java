@@ -31,7 +31,7 @@ public class CustomListAdapter extends ArrayAdapter {
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
         LayoutInflater li = LayoutInflater.from(context);
         View v = li.inflate(R.layout.song_view, null, false);
-        ImageView imageView = v.findViewById(R.id.imageView2);
+        //ImageView imageView = v.findViewById(R.id.imageView2);
         TextView name = v.findViewById(R.id.textView4);
         TextView artist = v.findViewById(R.id.textView6);
         TextView album = v.findViewById(R.id.textView7);

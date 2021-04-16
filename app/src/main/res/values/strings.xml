@@ -2,4 +2,22 @@
     <string name="app_name">MusicPlayer</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="intro">Welcome</string>
+    <string name="please_sign_in">Please fill the details</string>
+    <string name="fname">First Name</string>
+    <string name="lname">Last Name</string>
+    <string name="mobile">Mobile Number</string>
+    <string name="email">Email ID</string>
+    <string name="set_pwd">Set Password</string>
+    <string name="cnf_pwd">Confirm Password</string>
+    <string name="provide_fname">Please provide first name</string>
+    <string name="provide_lname">Please provide last name</string>
+    <string name="provide_mobile_no">Please provide 10 digit mobile number</string>
+    <string name="not_ten_digit">Mobile number is not 10 digit</string>
+    <string name="invalid_email">Email ID is not valid</string>
+    <string name="pwd_not_valid">Please provid a valid password atleast 6 characters long</string>
+    <string name="password_not_match">Password does not match</string>
+
+    <string name="open">open</string>
+    <string name="close">close</string>
 </resources>

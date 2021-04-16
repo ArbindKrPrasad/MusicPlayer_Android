@@ -7,4 +7,13 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="RatingBar" parent="Theme.AppCompat">
+        <item name="colorControlNormal">#ffffff</item>
+        <item name="colorControlActivated">#4A9C04</item>
+    </style>
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
 </resources>

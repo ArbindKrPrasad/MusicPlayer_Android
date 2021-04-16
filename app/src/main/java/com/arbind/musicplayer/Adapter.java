@@ -28,6 +28,9 @@ public class Adapter extends FragmentPagerAdapter {
             case 1:
                 SonglistFragment songlistFragment = new SonglistFragment();
                 return songlistFragment;
+            case 2:
+                AboutFragment aboutFragment = new AboutFragment();
+                return aboutFragment;
             default:
                 return null;
         }

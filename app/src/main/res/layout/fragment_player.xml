@@ -31,7 +31,6 @@
             android:marqueeRepeatLimit="marquee_forever"
             android:singleLine="true"
             android:paddingTop="10dp"
-            android:text="Song Name"
             android:textColor="#ffffff"
             android:textSize="25dp"
             app:layout_constraintEnd_toEndOf="@+id/imageView"
