@@ -39,17 +39,12 @@ public class SonglistFragment extends Fragment {
     CustomListAdapter customListAdapter;
     ListView lv;
 
-
-    public static final String MyPreference = "MyPrif";
     public static final String jsonPreference = "JPref";
-    public static final String songPath = "songPath";
-    public static final String songName = "songName";
-    public static final String songArtist = "songArtist";
-    public static final String songAlbum = "songAlbum";
+
     public static final String songIndex = "songIndex";
     public static final String jArray = "jArray";
 
-    SharedPreferences sp, jsp;
+    SharedPreferences  jsp;
 
     @Override
     public View onCreateView(final LayoutInflater inflater, ViewGroup container, final Bundle savedInstanceState) {
@@ -67,49 +62,11 @@ public class SonglistFragment extends Fragment {
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                PlayerFragment playerFragment = new PlayerFragment();
-//                Bundle bundle = new Bundle();
-//                bundle.putString("path",songList.get(position).getPath());
-//                bundle.putString("name",songList.get(position).getName());
-//                bundle.putString("artist",songList.get(position).getArtist());
-//                bundle.putString("album",songList.get(position).getAlbum());
-//                System.out.println(songList.get(position).getPath());
-//                playerFragment.setArguments(bundle);
-
-
-//                PlayerFragment pf = new PlayerFragment();
-//                FragmentManager fm = getFragmentManager();
-//                FragmentTransaction ft = fm.beginTransaction();
-//                Bundle bundle = new Bundle();
-//                bundle.putString("path",songList.get(position).getPath());
-//                bundle.putString("name",songList.get(position).getName());
-//                bundle.putString("artist",songList.get(position).getArtist());
-//                bundle.putString("album",songList.get(position).getAlbum());
-//                pf.setArguments(bundle);
-                //ft.setTransition();
-               // ft.commit();
-
                 SharedPreferences.Editor editor = jsp.edit();
-//                editor.putString(songPath, songList.get(position).getPath());
-//                editor.putString(songName,songList.get(position).getName() );
-//                editor.putString(songArtist, songList.get(position).getArtist());
-//                editor.putString(songAlbum, songList.get(position).getAlbum());
                 editor.putInt(songIndex,position);
                 editor.commit();
-
-                //((MainActivity) getActivity()).store(songList.get(position).getPath());
-
-                //View v2 = inflater.inflate(R.layout.activity_main, null, false);
-//                ViewPager mViewPager  = v2.findViewById(R.id.viewPager);
-//                mViewPager.setCurrentItem(0);
-//                getChildFragmentManager().beginTransaction().replace(R.id.viewPager, playerFragment).commit();
-
-//
                 TabLayout tabhost = (TabLayout) getActivity().findViewById(R.id.tabLayout);
                 tabhost.getTabAt(0).select();
-
-
-
             }
         });
         return v;
@@ -145,9 +102,7 @@ public class SonglistFragment extends Fragment {
                 } catch (Exception e){
 
                 }
-
                 SongObject song = new SongObject(path, name, album, artist);
-                //System.out.println(path+" "+name+" "+album+" "+ artist);
                 tempAudioList.add(song);
             }
             c.close();
@@ -161,6 +116,7 @@ public class SonglistFragment extends Fragment {
         return tempAudioList;
 
     }
+
     public void setToView(){
         customListAdapter = new CustomListAdapter(getContext(), R.layout.song_view, songList);
         lv.setAdapter(customListAdapter);

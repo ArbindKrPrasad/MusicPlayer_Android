@@ -228,6 +228,13 @@ public class PlayerFragment extends Fragment {
             }
         });
 
+        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                nextSong();
+            }
+        });
+
         return rootView;
     }
 
@@ -308,10 +315,8 @@ public class PlayerFragment extends Fragment {
                 finalTime = mediaPlayer.getDuration();
                 startTime = mediaPlayer.getCurrentPosition();
 
-                //if (oneTimeOnly == 0) {
-                    seekBar.setMax((int) finalTime);
-                    //oneTimeOnly = 1;
-                //}
+                seekBar.setMax((int) finalTime);
+
 
                 endTimeTV.setText(String.format("%d : %02d",
                         TimeUnit.MILLISECONDS.toMinutes((long) finalTime),
@@ -372,12 +377,6 @@ public class PlayerFragment extends Fragment {
             seekBar.setProgress((int)startTime);
             myHandler.postDelayed(this, 100);
             //System.out.println(startTime+" "+finalTime);
-            if(startTime>=finalTime-100){
-                System.out.println("nextSong");
-                nextSong();
-            }
-
-            //System.out.println(startTime+" "+finalTime);
 
         }
     };
@@ -426,21 +425,6 @@ public class PlayerFragment extends Fragment {
         }
     }
 
-//    @Override
-//    public void onResume() {
-//        super.onResume();
-//        if(!isFirstVisit) {
-//            uri = this.getArguments().getString("path");
-//            name = this.getArguments().getString("name");
-//            album = this.getArguments().getString("album");
-//            artistName = this.getArguments().getString("artist");
-//            isFirstVisit = false;
-//        } else{
-//            isFirstVisit = false;
-//        }
-//    }
-
-
     @Override
     public void onResume() {
         super.onResume();
@@ -456,7 +440,7 @@ public class PlayerFragment extends Fragment {
         if(isPlaying){
             play.setImageResource(R.drawable.pausew);
         } else{
-            play.setImageResource(R.drawable.pausew);
+            play.setImageResource(R.drawable.playw);
         }
     }
 }
