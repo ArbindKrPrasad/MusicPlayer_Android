@@ -19,6 +19,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -46,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     View view;
     int RESULT_LOAD_IMAGE = 101;
     int indx = -1;
+    Runnable runnable;
 
     TextView userName, userMobile, userEmail;
 
@@ -54,6 +56,10 @@ public class MainActivity extends AppCompatActivity {
     public static final String uName = "userName";
     public static final String uMobile = "userMobile";
     public static final String uemail = "userEmail";
+
+    public MediaPlayer mediaPlayer = new MediaPlayer();
+
+    public Runnable UpdateSongTime;
 
     @SuppressLint("ResourceAsColor")
     @Override
@@ -200,5 +206,27 @@ public class MainActivity extends AppCompatActivity {
         if(abdt.onOptionsItemSelected(item))
             return true;
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        mediaPlayer.release();
+        mediaPlayer = null;
+        Handler handler = new Handler();
+        handler.post(runnable);
+        handler.removeCallbacks(runnable);
+        finishAndRemoveTask();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mediaPlayer.release();
+        mediaPlayer = null;
+        Handler handler = new Handler();
+        handler.post(runnable);
+        handler.removeCallbacks(runnable);
+        finishAndRemoveTask();
     }
 }

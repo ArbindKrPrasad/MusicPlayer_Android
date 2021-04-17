@@ -60,6 +60,8 @@ public class PlayerFragment extends Fragment {
     SeekBar seekBar;
     private Handler myHandler = new Handler();
 
+
+
     private int forwardTime = 5000;
     private int backwardTime = 5000;
     String songsJSON;
@@ -68,7 +70,8 @@ public class PlayerFragment extends Fragment {
     JSONObject jsonObject;
     boolean isNextPrev = false;
 
-    MediaPlayer mediaPlayer = new MediaPlayer();
+
+    //MediaPlayer mediaPlayer = new MediaPlayer();
     public static final String uName = "userName";
     public static final String uMobile = "userMobile";
     public static final String uemail = "userEmail";
@@ -86,7 +89,7 @@ public class PlayerFragment extends Fragment {
         songsJSON = jsp.getString("jArray", "");
         System.out.println("Song Array"+songsJSON);
 
-
+        //((MainActivity) getActivity()).mediaPlayer
 
 //        View header = getLayoutInflater().inflate(R.layout.header_layout, null, false);
 //
@@ -184,7 +187,7 @@ public class PlayerFragment extends Fragment {
 
                 if((temp+forwardTime)<=finalTime){
                     startTime = startTime + forwardTime;
-                    mediaPlayer.seekTo((int) startTime);
+                    ((MainActivity) getActivity()).mediaPlayer.seekTo((int) startTime);
                     //Toast.makeText(getContext(),"You have Jumped forward 5 seconds",Toast.LENGTH_SHORT).show();
                 }else{
                     Toast.makeText(getContext(),"Cannot jump forward 5 seconds",Toast.LENGTH_SHORT).show();
@@ -199,7 +202,7 @@ public class PlayerFragment extends Fragment {
 
                 if((temp-backwardTime)>0){
                     startTime = startTime - backwardTime;
-                    mediaPlayer.seekTo((int) startTime);
+                    ((MainActivity) getActivity()).mediaPlayer.seekTo((int) startTime);
                     //Toast.makeText(getContext(),"You have Jumped backward 5 seconds",Toast.LENGTH_SHORT).show();
                 }else{
                     Toast.makeText(getContext(),"Cannot jump backward 5 seconds",Toast.LENGTH_SHORT).show();
@@ -213,7 +216,7 @@ public class PlayerFragment extends Fragment {
                 if(fromUser){
                     int changeBar = seekBar.getProgress();
                     seekBar.setProgress(changeBar);
-                    mediaPlayer.seekTo(changeBar);
+                    ((MainActivity) getActivity()).mediaPlayer.seekTo(changeBar);
                 }
             }
 
@@ -228,7 +231,7 @@ public class PlayerFragment extends Fragment {
             }
         });
 
-        mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+        ((MainActivity) getActivity()).mediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 nextSong();
@@ -295,25 +298,25 @@ public class PlayerFragment extends Fragment {
         }
         else{
             if(isSongUpdated||isNextPrev){
-                mediaPlayer.reset();
-                //mediaPlayer.stop();
+                ((MainActivity) getActivity()).mediaPlayer.reset();
+                //((MainActivity) getActivity()).mediaPlayer.stop();
                 try {
-                    mediaPlayer.setDataSource(songPath);
+                    ((MainActivity) getActivity()).mediaPlayer.setDataSource(songPath);
 
                     updateSongDetails();
                     oldPath = songPath;
-                    mediaPlayer.prepare();
+                    ((MainActivity) getActivity()).mediaPlayer.prepare();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
                 isSongUpdated = false;
                 isNextPrev = false;
-                mediaPlayer.start();
+                ((MainActivity) getActivity()).mediaPlayer.start();
                 isPlaying = true;
                 play.setImageResource(R.drawable.pausew);
-                //endDuration = mediaPlayer.getDuration();
-                finalTime = mediaPlayer.getDuration();
-                startTime = mediaPlayer.getCurrentPosition();
+                //endDuration = ((MainActivity) getActivity()).mediaPlayer.getDuration();
+                finalTime = ((MainActivity) getActivity()).mediaPlayer.getDuration();
+                startTime = ((MainActivity) getActivity()).mediaPlayer.getCurrentPosition();
 
                 seekBar.setMax((int) finalTime);
 
@@ -333,18 +336,20 @@ public class PlayerFragment extends Fragment {
                 );
 
                 seekBar.setProgress((int)startTime);
-                myHandler.postDelayed(UpdateSongTime,100);
+                ((MainActivity) getActivity()).runnable = UpdateSongTime;
+                //runnable = UpdateSongTime;
+                myHandler.postDelayed(((MainActivity) getActivity()).runnable,100);
                 //b2.setEnabled(true);
                 //b3.setEnabled(false);
             }
             else {
-                if(mediaPlayer.isPlaying()){
-                    mediaPlayer.pause();
+                if(((MainActivity) getActivity()).mediaPlayer.isPlaying()){
+                    ((MainActivity) getActivity()).mediaPlayer.pause();
                     isPlaying = false;
                     title.setSelected(false);
                     play.setImageResource(R.drawable.playw);
                 } else {
-                    mediaPlayer.start();
+                    ((MainActivity) getActivity()).mediaPlayer.start();
                     isPlaying = true;
                     title.setSelected(true);
                     play.setImageResource(R.drawable.pausew);
@@ -367,7 +372,13 @@ public class PlayerFragment extends Fragment {
 
     private Runnable UpdateSongTime = new Runnable() {
         public void run() {
-            startTime = mediaPlayer.getCurrentPosition();
+            try{
+                startTime = ((MainActivity) getActivity()).mediaPlayer.getCurrentPosition();
+            } catch(Exception e){
+
+
+            }
+
             startTimeTV.setText(String.format("%d : %02d",
                     TimeUnit.MILLISECONDS.toMinutes((long) startTime),
                     TimeUnit.MILLISECONDS.toSeconds((long) startTime) -
@@ -379,6 +390,7 @@ public class PlayerFragment extends Fragment {
             //System.out.println(startTime+" "+finalTime);
 
         }
+
     };
 
     public void nextSong(){
@@ -443,4 +455,27 @@ public class PlayerFragment extends Fragment {
             play.setImageResource(R.drawable.playw);
         }
     }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        try{
+
+            Handler h = new Handler();
+            h.removeCallbacksAndMessages(((MainActivity) getActivity()));
+        } catch (Exception e){
+
+        }
+    }
+
+//    @Override
+//    public void onPause() {
+//        super.onPause();
+//        try{
+//            Thread.currentThread().interrupt();
+//        } catch (Exception e){
+//
+//        }
+//
+//    }
 }

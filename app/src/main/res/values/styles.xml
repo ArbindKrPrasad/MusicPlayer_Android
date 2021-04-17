@@ -11,6 +11,10 @@
         <item name="colorControlNormal">#ffffff</item>
         <item name="colorControlActivated">#4A9C04</item>
     </style>
+    <style name="SeekBar" parent="Theme.AppCompat">
+        <item name="colorControlNormal">#ffffff</item>
+        <item name="colorControlActivated">#009688</item>
+    </style>
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

@@ -31,6 +31,7 @@ public class Login extends AppCompatActivity {
         if(isLoggedIn){
             Intent i = new Intent(Login.this, MainActivity.class);
             startActivity(i);
+            finish();
         }
 
 
@@ -71,6 +72,7 @@ public class Login extends AppCompatActivity {
             Intent i = new Intent(Login.this, MainActivity.class);
             i.putExtra("my_key", full_name);
             startActivity(i);
+            finish();
         }
         else{
             if(first_name.length()==0){
