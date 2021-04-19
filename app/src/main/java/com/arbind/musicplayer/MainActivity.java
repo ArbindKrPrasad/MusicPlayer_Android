@@ -32,6 +32,7 @@ import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 
+
 public class MainActivity extends AppCompatActivity {
     TabLayout tabLayout;
     ViewPager viewPager;
@@ -219,14 +220,14 @@ public class MainActivity extends AppCompatActivity {
         finishAndRemoveTask();
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mediaPlayer.release();
-        mediaPlayer = null;
-        Handler handler = new Handler();
-        handler.post(runnable);
-        handler.removeCallbacks(runnable);
-        finishAndRemoveTask();
-    }
+//    @Override
+//    protected void onDestroy() {
+//        super.onDestroy();
+//        mediaPlayer.release();
+//        mediaPlayer = null;
+//        Handler handler = new Handler();
+//        handler.post(runnable);
+//        handler.removeCallbacks(runnable);
+//        finishAndRemoveTask();
+//    }
 }
