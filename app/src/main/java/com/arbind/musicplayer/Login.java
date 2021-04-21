@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class Login extends AppCompatActivity {
     EditText fn, ln, phn, eml, pwd, cpwd;
@@ -61,7 +62,7 @@ public class Login extends AppCompatActivity {
         String first_name = fn.getText().toString();
         String full_name = first_name;
 
-        if(first_name.length()>0&&phn_no.length()==10&&isEmailValid){
+        if(first_name.length()>0&&phn_no.length()==10&&(isEmailValid||email.equals(""))){
             SharedPreferences.Editor editor = jsp.edit();
             editor.putBoolean(loggedIn, true);
             editor.putString(uName, full_name);
@@ -91,7 +92,7 @@ public class Login extends AppCompatActivity {
                 phn.setError(getString(R.string.not_ten_digit));
                 //warn.setText(getString(R.string.not_ten_digit));
             }
-            else if(!isEmailValid){
+            else if(email!=""){
                 eml.requestFocus();
                 eml.setError(getString(R.string.invalid_email));
                 //warn.setText(getString(R.string.invalid_email));
@@ -99,6 +100,5 @@ public class Login extends AppCompatActivity {
 
         }
     }
-
-
 }
+

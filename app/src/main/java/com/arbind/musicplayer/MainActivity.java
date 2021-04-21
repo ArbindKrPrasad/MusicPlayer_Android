@@ -1,6 +1,7 @@
 package com.arbind.musicplayer;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -16,10 +17,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
+import android.provider.MediaStore;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -31,6 +34,8 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -61,6 +66,8 @@ public class MainActivity extends AppCompatActivity {
     public MediaPlayer mediaPlayer = new MediaPlayer();
 
     public Runnable UpdateSongTime;
+
+    CircleImageView civ;
 
     @SuppressLint("ResourceAsColor")
     @Override
@@ -143,15 +150,24 @@ public class MainActivity extends AppCompatActivity {
         NavigationView nv = findViewById(R.id.nvl);
         View header = nv.getHeaderView(0);
 
+        civ = header.findViewById(R.id.profile_image);
+        civ.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent i = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(i, 101);
+            }
+        });
+
 
         userName = header.findViewById(R.id.tv4);
-        userEmail = header.findViewById(R.id.tv3);
+        userMobile = header.findViewById(R.id.tv3);
 
 
         String name = jsp.getString(uName, "UserName");
         String email = jsp.getString(uemail, "email");
         userName.setText("Hi "+name);
-        userEmail.setText(jsp.getString(uemail, "email id"));
+        userMobile.setText("+91 "+jsp.getString(uMobile, "Mobile Number"));
 
 
         nv.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -200,6 +216,15 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 101 && resultCode == RESULT_OK) {
+            Bitmap photo = (Bitmap) data.getExtras().get("data");
+            civ.setImageBitmap(photo);
+        }
     }
 
     @Override

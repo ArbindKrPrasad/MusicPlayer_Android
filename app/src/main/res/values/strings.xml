@@ -7,7 +7,7 @@
     <string name="fname">First Name</string>
     <string name="lname">Last Name</string>
     <string name="mobile">Mobile Number</string>
-    <string name="email">Email ID</string>
+    <string name="email">Email ID (optional)</string>
     <string name="set_pwd">Set Password</string>
     <string name="cnf_pwd">Confirm Password</string>
     <string name="provide_fname">Please provide first name</string>
